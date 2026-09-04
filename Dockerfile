@@ -21,7 +21,7 @@ RUN corepack enable && corepack install
 
 # Install all dependencies (including dev for building)
 # Use cache mount to avoid storing pnpm store in image
-RUN --mount=type=cache,id=pnpm-store,target=/app/.pnpm-store \
+RUN --mount=type=cache,id=s/34f7c639-1519-4fad-8b33-b3706182346f-/app/.pnpm-store,target=/app/.pnpm-store \
     pnpm install --frozen-lockfile
 
 
@@ -68,9 +68,10 @@ RUN corepack enable && corepack install
 # Install production deps only
 # Use cache mount to avoid storing pnpm store in image
 # Strip onnxruntime-web WASM blobs, uses onnxruntime-node (native)
-RUN --mount=type=cache,id=pnpm-store,target=/app/.pnpm-store \
+RUN --mount=type=cache,id=s/34f7c639-1519-4fad-8b33-b3706182346f-/app/.pnpm-store,target=/app/.pnpm-store \
     pnpm install --frozen-lockfile --prod && \
     rm -rf /app/node_modules/.pnpm/onnxruntime-web@*
+
 
 
 # Copy built artifacts from builder
