@@ -21,8 +21,9 @@ RUN corepack enable && corepack install
 
 # Install all dependencies (including dev for building)
 # Use cache mount to avoid storing pnpm store in image
-RUN --mount=type=cache,target=/app/.pnpm-store \
+RUN --mount=type=cache,id=pnpm-store,target=/app/.pnpm-store \
     pnpm install --frozen-lockfile
+
 
 # Copy source code
 COPY tsconfig.base.json ./
@@ -67,9 +68,10 @@ RUN corepack enable && corepack install
 # Install production deps only
 # Use cache mount to avoid storing pnpm store in image
 # Strip onnxruntime-web WASM blobs, uses onnxruntime-node (native)
-RUN --mount=type=cache,target=/app/.pnpm-store \
+RUN --mount=type=cache,id=pnpm-store,target=/app/.pnpm-store \
     pnpm install --frozen-lockfile --prod && \
     rm -rf /app/node_modules/.pnpm/onnxruntime-web@*
+
 
 # Copy built artifacts from builder
 COPY --from=builder /app/packages/shared/dist packages/shared/dist
@@ -98,9 +100,6 @@ ENV FILE_STORAGE_DIR=/app/data/storage
 # -v flag for the user.
 ENV CLAUDE_CONFIG_DIR=/app/data/claude-config
 
-# File-native storage + user uploads live in /app/data at runtime.
-# Mount a volume here for persistence.
-VOLUME /app/data
 
 # Default port
 ENV PORT=7860
